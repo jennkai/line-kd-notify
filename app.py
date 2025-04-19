@@ -10,7 +10,12 @@ from ta.momentum import StochasticOscillator  # 用 ta 套件替代 talib
 
 app = Flask(__name__)
 
-# 環境變數
+# 環境變數 Debug
+print("[DEBUG] CHANNEL_ACCESS_TOKEN:", os.getenv("CHANNEL_ACCESS_TOKEN"))
+print("[DEBUG] CHANNEL_SECRET:", os.getenv("CHANNEL_SECRET"))
+print("[DEBUG] USER_ID:", os.getenv("USER_ID"))
+
+# 初始化 Line API
 line_bot_api = LineBotApi(os.getenv("CHANNEL_ACCESS_TOKEN"))
 handler = WebhookHandler(os.getenv("CHANNEL_SECRET"))
 USER_ID = os.getenv("USER_ID")
@@ -52,7 +57,7 @@ def fetch_kd(stock_id):
 
         return df['K'].iloc[-1], df['D'].iloc[-1]
     except Exception as e:
-        print(f"[ERROR] 抓取 KD 失敗：{e}")
+        print(f"[ERROR] 抓取 KD 失敗：{type(e).__name__} - {e}")
         return None
 
 def notify_kd():
@@ -68,7 +73,7 @@ def notify_kd():
                     print(f"[DEBUG] 發送 LINE 訊息：{message}")
                     line_bot_api.push_message(USER_ID, TextSendMessage(text=message))
                 except Exception as e:
-                    print(f"[ERROR] 發送失敗：{e}")
+                    print(f"[ERROR] 發送失敗：{type(e).__name__} - {e}")
 
 @app.route("/test_kd", methods=["GET"])
 def test_kd():
